@@ -15,8 +15,13 @@ This project aims to develop an image classification system that can identify di
 
 The final system will combine:
 
-- Deep Learning
-- Convolutional Neural Networks (CNN)
+- Dataset preparation
+- Dataset verification
+- Duplicate detection
+- Data loading and preprocessing
+- CNN model development
+- Model training
+- Model evaluation
 - Transfer Learning
 - Image preprocessing
 - Model evaluation
@@ -30,10 +35,21 @@ The final system will combine:
 
 The main objective of this project is to build an end-to-end image classification web application capable of classifying an Apple leaf image into one of four categories:
 
-1. Apple Scab
-2. Apple Black Rot
-3. Apple Cedar Apple Rust
-4. Healthy Apple Leaf
+        1. Apple Scab
+        2. Apple Black Rot
+        3. Apple Cedar Apple Rust
+        4. Healthy Apple Leaf
+
+1. Prepare and verify an apple leaf image dataset.
+2. Remove or replace duplicate images between dataset splits.
+3. Build a CNN-based image classification model.
+4. Train the model on apple leaf images.
+5. Evaluate the model using accuracy, precision, recall, F1-score, and confusion matrix.
+6. Create an image prediction pipeline.
+7. Integrate the trained model into a Flask web application.
+8. Provide a simple interface for users to upload apple leaf images and receive predictions.
+9. Maintain the complete project using Git and GitHub.
+
 
 The project will also compare a CNN built from scratch with a Transfer Learning model and select the better-performing model for the final web application.
 
