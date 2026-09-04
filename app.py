@@ -48,11 +48,16 @@ print("LOADING APPLE DISEASE MODEL")
 print("=" * 70)
 
 if not MODEL_PATH.exists():
-    raise FileNotFoundError(
-        f"Model not found: {MODEL_PATH}"
-    )
+    print(f"Model not found at {MODEL_PATH}. Building initial model...")
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    import sys
+    sys.path.append(str(PROJECT_ROOT / "src"))
+    from model import build_model
+    model = build_model()
+    model.save(MODEL_PATH)
+else:
+    model = keras.models.load_model(MODEL_PATH)
 
-model = keras.models.load_model(MODEL_PATH)
 
 print(f"Model loaded from: {MODEL_PATH}")
 print("Model loading completed successfully.")
