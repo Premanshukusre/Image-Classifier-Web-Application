@@ -3,22 +3,13 @@
 
 version: "1"
 
-databases:
-  - name: image-classifier-db
-    databaseName: image_classifier_db
-    user: image_classifier_user
-    plan: free
-
 services:
   - type: web
     name: image-classifier-web-app
     runtime: python
+    plan: free
     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
-      - key: DATABASE_URL
-        fromDatabase:
-          name: image-classifier-db
-          property: connectionString
