@@ -2,7 +2,11 @@ from pathlib import Path
 
 import numpy as np
 from flask import Flask, render_template, request
-from tensorflow import keras
+try:
+    import keras
+except ImportError:
+    from tensorflow import keras
+
 
 
 # ============================================================
