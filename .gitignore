@@ -38,6 +38,7 @@ env/
 
 models/*.h5
 models/*.keras
+!models/apple_disease_model.keras
 models/*.hdf5
 models/*.pt
 models/*.pth
