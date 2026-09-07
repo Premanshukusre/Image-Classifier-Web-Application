@@ -1,150 +1,253 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced AI-powered Apple Leaf Disease Classifier & Botanical Diagnostic Dashboard. Detect Apple Scab, Black Rot, Cedar Apple Rust, and Leaf Health in real-time.">
+    <title>Apple AI Diagnostic Dashboard | Leaf Disease Classifier</title>
 
-    <title>Apple Disease Classifier</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f7f6;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 700px;
-            margin: 60px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 10px;
-        }
-
-        .description {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .upload-box {
-            border: 2px dashed #aaa;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        input[type="file"] {
-            margin: 15px 0;
-        }
-
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            background: #2e7d32;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1b5e20;
-        }
-
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            background: #e8f5e9;
-            border-radius: 10px;
-        }
-
-        .result h2 {
-            margin-top: 0;
-        }
-
-        .confidence {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .error {
-            margin-top: 20px;
-            padding: 15px;
-            background: #ffebee;
-            color: #c62828;
-            border-radius: 8px;
-        }
-    </style>
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
 
-    <div class="container">
+    <!-- ==========================================================================
+         TOP NAVIGATION BAR
+         ========================================================================== -->
+    <header class="app-navbar">
+        <div class="brand-container">
+            <div class="brand-logo">🍏</div>
+            <div>
+                <h1 class="brand-title">
+                    Apple AI Diagnostics
+                    <span class="brand-tag">v2.0 Neural AI</span>
+                </h1>
+            </div>
+        </div>
 
-        <h1>🍎 Apple Disease Classifier</h1>
+        <div class="nav-actions">
+            <button id="btnExportPDF" class="btn btn-secondary" title="Export Diagnostic Report">
+                📄 Export Report
+            </button>
+            <button id="btnThemeToggle" class="btn-icon" title="Toggle Dark/Light Theme">
+                ☀️
+            </button>
+        </div>
+    </header>
 
-        <p class="description">
-            Upload an image of an apple leaf to identify its disease.
-        </p>
+    <!-- ==========================================================================
+         MAIN DASHBOARD WORKSPACE
+         ========================================================================== -->
+    <main class="dashboard-container">
 
-        <form method="POST" enctype="multipart/form-data">
+        <!-- LEFT PANEL: UPLOAD & INPUT TOOLS -->
+        <section class="glass-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">📸 Image Scanner</h2>
+                    <p class="panel-subtitle">Upload or snap a leaf photo for instant AI analysis</p>
+                </div>
+            </div>
 
-            <div class="upload-box">
+            <!-- Drag & Drop Zone -->
+            <div id="dropzone" class="dropzone-container">
+                <div class="dropzone-icon">🍃</div>
+                <div class="dropzone-text">Drag & drop your leaf image here</div>
+                <div class="dropzone-subtext">Supports PNG, JPG, JPEG, WEBP (Max 16MB)</div>
+                <input type="file" id="fileInput" class="file-input-hidden" accept="image/*">
+            </div>
 
-                <p>Select an apple leaf image:</p>
-
-                <input type="file" name="image" accept="image/*" required>
-
-                <br>
-
-                <button type="submit">
-                    Predict Disease
+            <!-- Action Buttons -->
+            <div class="action-buttons-row">
+                <button id="btnSelectFile" class="btn btn-primary">
+                    📁 Select Image
                 </button>
+                <button id="btnWebcam" class="btn btn-secondary">
+                    📷 Live Camera
+                </button>
+            </div>
+
+            <!-- 1-Click Preset Samples -->
+            <div class="samples-picker">
+                <div class="samples-title">Quick Test Samples</div>
+                <div class="samples-grid">
+                    {% for sample in samples %}
+                    <div class="sample-card" data-sample="{{ sample.file }}">
+                        <img src="{{ url_for('static', filename='samples/' + sample.file) }}" class="sample-img" alt="{{ sample.name }}">
+                        <div class="sample-label">{{ sample.name }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Scan History Bar -->
+            <div class="history-section">
+                <div class="samples-title" style="margin-top: 24px;">Recent Session Scans</div>
+                <div id="historyGrid" class="history-grid">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: DIAGNOSTIC DASHBOARD -->
+        <section class="glass-panel" style="position: relative;">
+
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" class="loading-overlay">
+                <div class="pulse-spinner"></div>
+                <h3 style="font-size: 1.2rem; margin-bottom: 6px;">Analyzing Leaf Pathology...</h3>
+                <p id="loadingStatusText" style="color: var(--text-secondary); font-size: 0.88rem;">Initializing Neural Network...</p>
+            </div>
+
+            <!-- Empty Initial State -->
+            <div id="emptyStateCard" class="empty-state-card" {% if prediction %}style="display: none;"{% endif %}>
+                <div class="empty-state-icon">🩺</div>
+                <h2>No Active Scan Selected</h2>
+                <p style="margin-top: 8px; max-width: 420px; margin-left: auto; margin-right: auto;">
+                    Upload an apple leaf image or choose a preset sample on the left to generate real-time AI disease diagnostics and treatment plans.
+                </p>
+            </div>
+
+            <!-- Active Result Dashboard -->
+            <div id="activeResultSection" {% if not prediction %}style="display: none;"{% endif %}>
+
+                <!-- Header Result Card -->
+                <div class="result-header-card">
+                    <div class="result-main-info">
+                        <img id="resPreviewImg" src="{{ image_url or '' }}" class="preview-thumb" alt="Uploaded Leaf">
+                        <div>
+                            <div id="resSeverityBadge" class="severity-badge {{ disease_info.status if disease_info else 'healthy' }}">
+                                <span>●</span> {{ disease_info.severity_label if disease_info else 'Diagnostic Ready' }}
+                            </div>
+                            <h2 id="resDiseaseName" class="disease-name">{{ prediction or 'Diagnostic Result' }}</h2>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary);">Pathogen: {{ disease_info.pathogen if disease_info else 'N/A' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="confidence-meter-box">
+                        <div id="resConfidenceVal" class="confidence-val">
+                            {% if confidence %}{{ "%.1f"|format(confidence) }}%{% else %}0%{% endif %}
+                        </div>
+                        <div class="confidence-lbl">AI Confidence</div>
+                    </div>
+                </div>
+
+                <!-- Probability Distribution Bars -->
+                <div class="probabilities-card">
+                    <div class="card-subtitle">Probability Distribution Breakdown</div>
+                    <div id="probBarsContainer">
+                        {% if all_probabilities %}
+                            {% for name, prob in all_probabilities.items() %}
+                            <div class="prob-row">
+                                <div class="prob-labels">
+                                    <span style="{% if name == prediction %}color: var(--accent-emerald); font-weight: 700;{% endif %}">{{ name }}</span>
+                                    <span>{{ prob }}%</span>
+                                </div>
+                                <div class="prob-track">
+                                    <div class="prob-fill {% if name == prediction %}highlight{% endif %}" style="width: {{ prob }}%;"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Tabbed Botanical Intelligence -->
+                <div class="tabs-container">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="overview">Overview</button>
+                        <button class="tab-btn" data-tab="symptoms">Symptoms</button>
+                        <button class="tab-btn" data-tab="organic">Organic Remedies</button>
+                        <button class="tab-btn" data-tab="chemical">Chemical Control</button>
+                        <button class="tab-btn" data-tab="prevention">Prevention</button>
+                    </div>
+
+                    <div id="tab-overview" class="tab-content-panel active">
+                        <p id="infoSummary">{{ disease_info.summary if disease_info else 'Overview details will be displayed here.' }}</p>
+                    </div>
+
+                    <div id="tab-symptoms" class="tab-content-panel">
+                        <ul id="infoSymptoms" class="bullet-list">
+                            {% if disease_info and disease_info.symptoms %}
+                                {% for s in disease_info.symptoms %}<li>{{ s }}</li>{% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div id="tab-organic" class="tab-content-panel">
+                        <ul id="infoOrganic" class="bullet-list">
+                            {% if disease_info and disease_info.organic_remedies %}
+                                {% for o in disease_info.organic_remedies %}<li>{{ o }}</li>{% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div id="tab-chemical" class="tab-content-panel">
+                        <ul id="infoChemical" class="bullet-list">
+                            {% if disease_info and disease_info.chemical_controls %}
+                                {% for c in disease_info.chemical_controls %}<li>{{ c }}</li>{% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div id="tab-prevention" class="tab-content-panel">
+                        <ul id="infoPrevention" class="bullet-list">
+                            {% if disease_info and disease_info.prevention_tips %}
+                                {% for p in disease_info.prevention_tips %}<li>{{ p }}</li>{% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Leaf Visual Inspector (Canvas Filters) -->
+                <div class="canvas-inspector-box">
+                    <div class="card-subtitle">Visual Lesion & Health Inspector</div>
+                    <div class="canvas-toolbar">
+                        <button class="filter-btn active" data-filter="normal">Normal View</button>
+                        <button class="filter-btn" data-filter="contrast">High Contrast</button>
+                        <button class="filter-btn" data-filter="edge">Edge Highlight</button>
+                        <button class="filter-btn" data-filter="thermal">Thermal Map</button>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="leafInspectorCanvas"></canvas>
+                    </div>
+                </div>
 
             </div>
 
-        </form>
+        </section>
 
+    </main>
 
-        {% if prediction %}
+    <!-- ==========================================================================
+         WEBCAM CAMERA MODAL OVERLAY
+         ========================================================================== -->
+    <div id="cameraModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="panel-header">
+                <h3 class="panel-title">📷 Snap Leaf Photo</h3>
+                <button id="btnCloseCamera" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.4rem;">✕</button>
+            </div>
 
-        <div class="result">
+            <video id="cameraVideo" autoplay playsinline></video>
 
-            <h2>Prediction Result</h2>
-
-            <p>
-                <strong>Predicted Disease:</strong>
-                {{ prediction }}
-            </p>
-
-            <p class="confidence">
-                Confidence: {{ "%.2f"|format(confidence) }}%
-            </p>
-
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button id="btnSnapPhoto" class="btn btn-primary" style="width: 100%;">
+                    📸 Capture Photo & Analyze
+                </button>
+            </div>
         </div>
-
-        {% endif %}
-
-
-        {% if error %}
-
-        <div class="error">
-            {{ error }}
-        </div>
-
-        {% endif %}
-
     </div>
 
+    <!-- JS Logic -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 </html>

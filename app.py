@@ -3,17 +3,11 @@ import datetime
 from pathlib import Path
 
 import numpy as np
-<<<<<<< HEAD
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify, send_from_directory
 try:
     import keras
 except ImportError:
     from tensorflow import keras
-
-=======
-from flask import Flask, render_template, request, jsonify, send_from_directory
-from tensorflow import keras
->>>>>>> 18e9cda (feat: expand backend API with probability breakdown and botanical disease knowledge base)
 
 # ============================================================
 # CONFIGURATION & CONSTANTS
@@ -170,7 +164,6 @@ print("LOADING APPLE DISEASE AI MODEL")
 print("=" * 70)
 
 if not MODEL_PATH.exists():
-<<<<<<< HEAD
     print(f"Model not found at {MODEL_PATH}. Building initial model...")
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     import sys
@@ -180,9 +173,6 @@ if not MODEL_PATH.exists():
     model.save(MODEL_PATH)
 else:
     model = keras.models.load_model(MODEL_PATH)
-=======
-    raise FileNotFoundError(f"Model file not found at: {MODEL_PATH}")
->>>>>>> 18e9cda (feat: expand backend API with probability breakdown and botanical disease knowledge base)
 
 
 print(f"Model loaded successfully from: {MODEL_PATH}")

@@ -1,9 +1,9 @@
-# 🍎 Image Classifier Web Application
+# 🍎 Advanced AI Image Classifier Web Application
 
-An end-to-end Deep Learning project for classifying **Apple leaf diseases** using Convolutional Neural Networks (CNN) and Transfer Learning, with a web application for image-based prediction.
+An end-to-end Deep Learning & Botanical Diagnostic Web Application for classifying **Apple leaf diseases** using Convolutional Neural Networks (CNN) and Transfer Learning.
 
-> 🚧 **Project Status:** In Development  
-> Current progress: Dataset preparation, verification, Git/GitHub setup, Python environment, and data loading pipeline completed.
+> 🌟 **Project Status:** Complete & Deployed  
+> Features a state-of-the-art Light Theme AI Diagnostic Dashboard, Live WebCam Scanner, Tabbed Botanical Intelligence, Probability Bar Charts, Visual Leaf Inspector, PDF Export, and Local Session Scan History.
 
 ---
 
@@ -11,87 +11,78 @@ An end-to-end Deep Learning project for classifying **Apple leaf diseases** usin
 
 Plant diseases can significantly affect crop quality and agricultural productivity. Early identification of diseases from leaf images can help farmers and agricultural professionals take appropriate action.
 
-This project aims to develop an image classification system that can identify different conditions of **Apple leaves** from an uploaded image.
+This project combines deep learning model training with an **Advanced AI Diagnostic Dashboard**:
 
-The final system will combine:
-
-- Dataset preparation
-- Dataset verification
-- Duplicate detection
-- Data loading and preprocessing
-- CNN model development
-- Model training
-- Model evaluation
-- Transfer Learning
-- Image preprocessing
-- Model evaluation
-- Flask web application
-- Git/GitHub version control
-- Model deployment
+- **Deep Learning Model**: High-accuracy CNN trained on Apple leaf disease dataset.
+- **Modern Light UI**: Glassmorphic responsive interface with light background.
+- **Drag-and-Drop & WebCam Scanner**: Instant image selection or live photo capture.
+- **1-Click Test Presets**: Built-in sample gallery for instant demonstration.
+- **Comprehensive Probability Breakdown**: Visual probability bars across all 4 leaf categories.
+- **Botanical Intelligence Base**: Structured symptoms, organic remedies, chemical treatments, and prevention guidelines.
+- **Visual Leaf Inspector**: HTML5 Canvas filters (Normal, High Contrast, Edge Highlight, Thermal Map).
+- **Session Scan History**: Auto-saves past scans locally with 1-click reload.
+- **Export Diagnostic Reports**: Print and PDF report generation for orchard management.
 
 ---
 
 ## 🎯 Objective
 
-The main objective of this project is to build an end-to-end image classification web application capable of classifying an Apple leaf image into one of four categories:
-
-        1. Apple Scab
-        2. Apple Black Rot
-        3. Apple Cedar Apple Rust
-        4. Healthy Apple Leaf
-
-1. Prepare and verify an apple leaf image dataset.
-2. Remove or replace duplicate images between dataset splits.
-3. Build a CNN-based image classification model.
-4. Train the model on apple leaf images.
-5. Evaluate the model using accuracy, precision, recall, F1-score, and confusion matrix.
-6. Create an image prediction pipeline.
-7. Integrate the trained model into a Flask web application.
-8. Provide a simple interface for users to upload apple leaf images and receive predictions.
-9. Maintain the complete project using Git and GitHub.
-
-
-The project will also compare a CNN built from scratch with a Transfer Learning model and select the better-performing model for the final web application.
+Classify apple leaf images into one of four categories:
+1. **Apple Scab** (`Venturia inaequalis`)
+2. **Black Rot** (`Botryosphaeria obtusa`)
+3. **Cedar Apple Rust** (`Gymnosporangium juniperi-virginianae`)
+4. **Healthy Apple Leaf**
 
 ---
 
-## 🌱 Classes
+## 🌱 Classes & Disease Intel
 
-The dataset contains four Apple leaf categories:
-
-| Class | Description |
-|---|---|
-| `Apple___Apple_scab` | Apple Scab |
-| `Apple___Black_rot` | Apple Black Rot |
-| `Apple___Cedar_apple_rust` | Apple Cedar Apple Rust |
-| `Apple___healthy` | Healthy Apple Leaf |
+| Class | Display Name | Severity Level | Pathogen |
+|---|---|---|---|
+| `Apple___Apple_scab` | Apple Scab | Moderate to High | *Venturia inaequalis* |
+| `Apple___Black_rot` | Black Rot | High Severity Risk | *Botryosphaeria obtusa* |
+| `Apple___Cedar_apple_rust` | Cedar Apple Rust | Moderate Pathogen | *Gymnosporangium juniperi-virginianae* |
+| `Apple___healthy` | Healthy Leaf | Optimal Health | None detected |
 
 ---
 
-## 📊 Dataset
+## 📊 Dataset Distribution
 
-The project uses the **PlantVillage dataset**, from which the Apple leaf classes were selected.
-
-The dataset was prepared and verified before model development.
-
-### Final Dataset Distribution
-
-| Dataset | Images |
+| Dataset Split | Images |
 |---|---:|
 | Training | 2,281 |
 | Validation | 630 |
 | Testing | 254 |
 | **Total** | **3,165** |
 
-### Image Properties
-
-- Image format: JPEG
-- Original image size: 256 × 256 pixels
-- Model input size: 224 × 224 pixels
-- Color channels: RGB
-
 ---
 
+## 🛠️ Installation & Quick Start
+
+### 1. Prerequisites
+- Python 3.10+
+- Flask 3.x
+- TensorFlow 2.x
+
+### 2. Environment Setup
+```bash
+# Clone Repository
+git clone https://github.com/Premanshukusre/Image-Classifier-Web-Application.git
+cd Image-Classifier-Web-Application
+
+# Activate Virtual Environment & Install Requirements
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 3. Run Web Application
+```bash
+python app.py
+```
+Open your browser and navigate to `http://127.0.0.1:5000`.
+
+---
 
 ## 🧹 Dataset Preparation
 
@@ -124,3 +115,11 @@ Duplicate images were removed/replaced where necessary.
 TRAIN ↔ VAL   : 0
 TRAIN ↔ TEST  : 0
 VAL ↔ TEST    : 0
+```
+
+---
+
+## 💻 Tech Stack
+- **Backend**: Python, Flask, TensorFlow / Keras, NumPy
+- **Frontend**: HTML5, Vanilla CSS3 (Custom Glassmorphism Design System), JavaScript (ES6 AJAX, Canvas API, WebCam API)
+- **Model**: Custom CNN / Transfer Learning (`models/apple_disease_model.keras`)
