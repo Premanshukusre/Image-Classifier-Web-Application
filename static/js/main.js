@@ -189,7 +189,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 300);
 
     try {
-      let options = { method: "POST" };
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+      let options = { method: "POST", signal: controller.signal };
       if (isJson) {
         options.headers = { "Content-Type": "application/json" };
         options.body = JSON.stringify(payload);
@@ -198,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const resp = await fetch("/api/predict", options);
+      clearTimeout(timeoutId);
       const data = await resp.json();
 
       clearInterval(interval);
@@ -207,12 +211,16 @@ document.addEventListener("DOMContentLoaded", () => {
         renderDiagnosticDashboard(data);
         saveScanToHistory(data);
       } else {
-        alert("Prediction Error: " + (data.error || "Unknown server error."));
+        alert("Diagnostic Notice: " + (data.error || "The server could not process this image. Please try again."));
       }
     } catch (err) {
       clearInterval(interval);
       hideLoadingOverlay();
-      alert("Network or Server error: " + err.message);
+      if (err.name === "AbortError") {
+        alert("Request timed out. The server took longer than 60 seconds to respond. Please retry.");
+      } else {
+        alert("Network or Server error: " + err.message);
+      }
     }
   }
 

@@ -1,5 +1,10 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 import datetime
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -156,26 +161,36 @@ app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB upload limit
 
 # ============================================================
-# LOAD MODEL
+# LOAD MODEL (THREAD-SAFE LAZY INITIALIZATION)
 # ============================================================
 
-print("=" * 70)
-print("LOADING APPLE DISEASE AI MODEL")
-print("=" * 70)
+_model = None
+_model_lock = threading.Lock()
 
-if not MODEL_PATH.exists():
-    print(f"Model not found at {MODEL_PATH}. Building initial model...")
-    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    import sys
-    sys.path.append(str(PROJECT_ROOT / "src"))
-    from model import build_model
-    model = build_model()
-    model.save(MODEL_PATH)
-else:
-    model = keras.models.load_model(MODEL_PATH)
-
-
-print(f"Model loaded successfully from: {MODEL_PATH}")
+def get_model():
+    """
+    Lazy-load the AI model on first prediction request.
+    Prevents high memory spikes during Gunicorn worker boot.
+    """
+    global _model
+    if _model is None:
+        with _model_lock:
+            if _model is None:
+                print("=" * 70)
+                print("LOADING APPLE DISEASE AI MODEL")
+                print("=" * 70)
+                if not MODEL_PATH.exists():
+                    print(f"Model not found at {MODEL_PATH}. Building initial model...")
+                    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+                    import sys
+                    sys.path.append(str(PROJECT_ROOT / "src"))
+                    from model import build_model
+                    _model = build_model()
+                    _model.save(MODEL_PATH)
+                else:
+                    _model = keras.models.load_model(MODEL_PATH)
+                print(f"Model loaded successfully from: {MODEL_PATH}")
+    return _model
 
 # ============================================================
 # PREDICTION HELPER
@@ -189,6 +204,7 @@ def predict_image(image_path):
         confidence (float): highest probability as percentage (0-100)
         all_probabilities (dict): mapping of display names to float percentages
     """
+    model = get_model()
     image = keras.utils.load_img(image_path, target_size=IMAGE_SIZE)
     image_array = keras.utils.img_to_array(image)
     image_array = image_array / 255.0  # Normalize
