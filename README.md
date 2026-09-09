@@ -2,7 +2,8 @@
 
 An end-to-end Deep Learning & Botanical Diagnostic Web Application for classifying **Apple leaf diseases** using Convolutional Neural Networks (CNN) and Transfer Learning.
 
-> 🌟 **Project Status:** Complete & Deployed  
+> 🌟 **Project Status:** Complete & Deployed
+
 > Features a state-of-the-art Light Theme AI Diagnostic Dashboard, Live WebCam Scanner, Tabbed Botanical Intelligence, Probability Bar Charts, Visual Leaf Inspector, PDF Export, and Local Session Scan History.
 
 ---
